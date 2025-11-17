@@ -1,0 +1,916 @@
+<template>
+	<div class="addEdit-block">
+		<el-form
+			class="add-update-preview"
+			ref="ruleForm"
+			:model="ruleForm"
+			:rules="rules"
+			label-width="180px"
+		>
+			<template >
+				<el-form-item class="input" v-if="type!='info'" label="场地编号" prop="changdibianhao" >
+					<el-input v-model="ruleForm.changdibianhao" placeholder="场地编号" readonly></el-input>
+				</el-form-item>
+				<el-form-item class="input" v-else-if="ruleForm.changdibianhao" label="场地编号" prop="changdibianhao" >
+					<el-input v-model="ruleForm.changdibianhao" placeholder="场地编号" readonly></el-input>
+				</el-form-item>
+				<el-form-item class="input" v-if="type!='info'"  label="场地名称" prop="changdimingcheng" >
+					<el-input v-model="ruleForm.changdimingcheng" placeholder="场地名称" clearable  :readonly="ro.changdimingcheng"></el-input>
+				</el-form-item>
+				<el-form-item v-else class="input" label="场地名称" prop="changdimingcheng" >
+					<el-input v-model="ruleForm.changdimingcheng" placeholder="场地名称" readonly></el-input>
+				</el-form-item>
+				<el-form-item class="select" v-if="type!='info'"  label="场地类型" prop="changdileixing" >
+					<el-select :disabled="ro.changdileixing" v-model="ruleForm.changdileixing" placeholder="请选择场地类型" >
+						<el-option
+							v-for="(item,index) in changdileixingOptions"
+							v-bind:key="index"
+							:label="item"
+							:value="item">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item v-else class="input" label="场地类型" prop="changdileixing" >
+					<el-input v-model="ruleForm.changdileixing"
+						placeholder="场地类型" readonly></el-input>
+				</el-form-item>
+				<el-form-item class="upload" v-if="type!='info' && !ro.changditupian" label="场地图片" prop="changditupian" >
+					<file-upload
+						tip="点击上传场地图片"
+						action="file/upload"
+						:limit="3"
+						:multiple="true"
+						:fileUrls="ruleForm.changditupian?ruleForm.changditupian:''"
+						@change="changditupianUploadChange"
+					></file-upload>
+				</el-form-item>
+				<el-form-item class="upload" v-else-if="ruleForm.changditupian" label="场地图片" prop="changditupian" >
+					<img v-if="ruleForm.changditupian.substring(0,4)=='http'&&ruleForm.changditupian.split(',w').length>1" class="upload-img" style="margin-right:20px;" v-bind:key="index" :src="ruleForm.changditupian" width="100" height="100">
+					<img v-else-if="ruleForm.changditupian.substring(0,4)=='http'" class="upload-img" style="margin-right:20px;" v-bind:key="index" :src="ruleForm.changditupian.split(',')[0]" width="100" height="100">
+					<img v-else class="upload-img" style="margin-right:20px;" v-bind:key="index" v-for="(item,index) in ruleForm.changditupian.split(',')" :src="$base.url+item" width="100" height="100">
+				</el-form-item>
+				<el-form-item class="input" v-if="type!='info'"  label="场地位置" prop="changdiweizhi" >
+					<el-input v-model="ruleForm.changdiweizhi" placeholder="场地位置" clearable  :readonly="ro.changdiweizhi"></el-input>
+				</el-form-item>
+				<el-form-item v-else class="input" label="场地位置" prop="changdiweizhi" >
+					<el-input v-model="ruleForm.changdiweizhi" placeholder="场地位置" readonly></el-input>
+				</el-form-item>
+				<el-form-item class="select" v-if="type!='info'"  label="场地状态" prop="changdizhuangtai" >
+					<el-select :disabled="ro.changdizhuangtai" v-model="ruleForm.changdizhuangtai" placeholder="请选择场地状态" >
+						<el-option
+							v-for="(item,index) in changdizhuangtaiOptions"
+							v-bind:key="index"
+							:label="item"
+							:value="item">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item v-else class="input" label="场地状态" prop="changdizhuangtai" >
+					<el-input v-model="ruleForm.changdizhuangtai"
+						placeholder="场地状态" readonly></el-input>
+				</el-form-item>
+				<el-form-item class="input" v-if="type!='info'"  label="场地面积" prop="changdimianji" >
+					<el-input v-model="ruleForm.changdimianji" placeholder="场地面积" clearable  :readonly="ro.changdimianji"></el-input>
+				</el-form-item>
+				<el-form-item v-else class="input" label="场地面积" prop="changdimianji" >
+					<el-input v-model="ruleForm.changdimianji" placeholder="场地面积" readonly></el-input>
+				</el-form-item>
+				<el-form-item class="select" v-if="type!='info'"  label="场地分类" prop="changdifenlei" >
+					<el-select :disabled="ro.changdifenlei" v-model="ruleForm.changdifenlei" placeholder="请选择场地分类" >
+						<el-option
+							v-for="(item,index) in changdifenleiOptions"
+							v-bind:key="index"
+							:label="item"
+							:value="item">
+						</el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item v-else class="input" label="场地分类" prop="changdifenlei" >
+					<el-input v-model="ruleForm.changdifenlei"
+						placeholder="场地分类" readonly></el-input>
+				</el-form-item>
+				<el-form-item class="input" v-if="type!='info'"  label="联系人" prop="lianxiren" >
+					<el-input v-model="ruleForm.lianxiren" placeholder="联系人" clearable  :readonly="ro.lianxiren"></el-input>
+				</el-form-item>
+				<el-form-item v-else class="input" label="联系人" prop="lianxiren" >
+					<el-input v-model="ruleForm.lianxiren" placeholder="联系人" readonly></el-input>
+				</el-form-item>
+				<el-form-item class="input" v-if="type!='info'"  label="联系电话" prop="lianxidianhua" >
+					<el-input v-model="ruleForm.lianxidianhua" placeholder="联系电话" clearable  :readonly="ro.lianxidianhua"></el-input>
+				</el-form-item>
+				<el-form-item v-else class="input" label="联系电话" prop="lianxidianhua" >
+					<el-input v-model="ruleForm.lianxidianhua" placeholder="联系电话" readonly></el-input>
+				</el-form-item>
+				<el-form-item class="input" v-if="type!='info'"  label="小时价格" prop="xiaoshijiage" >
+					<el-input-number v-model="ruleForm.xiaoshijiage" placeholder="小时价格" :disabled="ro.xiaoshijiage"></el-input-number>
+				</el-form-item>
+				<el-form-item v-else class="input" label="小时价格" prop="xiaoshijiage" >
+					<el-input v-model="ruleForm.xiaoshijiage" placeholder="小时价格" readonly></el-input>
+				</el-form-item>
+				<el-form-item class="input" v-if="type!='info'"  label="开放时间" prop="kaifangshijian" >
+					<el-input v-model="ruleForm.kaifangshijian" placeholder="开放时间" clearable  :readonly="ro.kaifangshijian"></el-input>
+				</el-form-item>
+				<el-form-item v-else class="input" label="开放时间" prop="kaifangshijian" >
+					<el-input v-model="ruleForm.kaifangshijian" placeholder="开放时间" readonly></el-input>
+				</el-form-item>
+				<el-form-item class="input" v-if="type!='info'"  label="容纳人数" prop="rongnarenshu" >
+					<el-input v-model.number="ruleForm.rongnarenshu" placeholder="容纳人数" clearable  :readonly="ro.rongnarenshu"></el-input>
+				</el-form-item>
+				<el-form-item v-else class="input" label="容纳人数" prop="rongnarenshu" >
+					<el-input v-model="ruleForm.rongnarenshu" placeholder="容纳人数" readonly></el-input>
+				</el-form-item>
+			</template>
+			<el-form-item v-if="type!='info'"  label="场地详情" prop="changdixiangqing" >
+				<editor 
+					style="min-width: 200px; max-width: 600px;"
+					v-model="ruleForm.changdixiangqing" 
+					class="editor" 
+					action="file/upload">
+				</editor>
+			</el-form-item>
+			<el-form-item v-else-if="ruleForm.changdixiangqing" label="场地详情" prop="changdixiangqing" >
+				<span class="text ql-snow ql-editor" v-html="ruleForm.changdixiangqing"></span>
+			</el-form-item>
+			<el-form-item class="btn">
+				<el-button class="btn3"  v-if="type!='info'" type="success" @click="onSubmit">
+					<span class="icon iconfont icon-xihuan"></span>
+					提交
+				</el-button>
+				<el-button class="btn4" v-if="type!='info'" type="success" @click="back()">
+					<span class="icon iconfont icon-xihuan"></span>
+					取消
+				</el-button>
+				<el-button class="btn5" v-if="type=='info'" type="success" @click="back()">
+					<span class="icon iconfont icon-xihuan"></span>
+					返回
+				</el-button>
+			</el-form-item>
+		</el-form>
+    
+
+	</div>
+</template>
+<script>
+	import { 
+		isNumber,
+		isIntNumer,
+		isMobile,
+	} from "@/utils/validate";
+	export default {
+		data() {
+			var validateMobile = (rule, value, callback) => {
+				if(!value){
+					callback();
+				} else if (!isMobile(value)) {
+					callback(new Error("请输入正确的手机号码"));
+				} else {
+					callback();
+				}
+			};
+			var validateNumber = (rule, value, callback) => {
+				if(!value){
+					callback();
+				} else if (!isNumber(value)) {
+					callback(new Error("请输入数字"));
+				} else {
+					callback();
+				}
+			};
+			var validateIntNumber = (rule, value, callback) => {
+				if(!value){
+					callback();
+				} else if (!isIntNumer(value)) {
+					callback(new Error("请输入整数"));
+				} else {
+					callback();
+				}
+			};
+			return {
+				id: '',
+				type: '',
+			
+			
+				ro:{
+					changdibianhao : false,
+					changdimingcheng : false,
+					changdileixing : false,
+					changditupian : false,
+					changdiweizhi : false,
+					changdizhuangtai : false,
+					changdimianji : false,
+					changdifenlei : false,
+					lianxiren : false,
+					lianxidianhua : false,
+					xiaoshijiage : false,
+					kaifangshijian : false,
+					rongnarenshu : false,
+					changdixiangqing : false,
+					storeupnum : false,
+				},
+			
+				ruleForm: {
+					changdibianhao: this.getUUID(),
+					changdimingcheng: '',
+					changdileixing: '',
+					changditupian: '',
+					changdiweizhi: '',
+					changdizhuangtai: '空闲中',
+					changdimianji: '',
+					changdifenlei: '',
+					lianxiren: '',
+					lianxidianhua: '',
+					xiaoshijiage: '',
+					kaifangshijian: '',
+					rongnarenshu: '',
+					changdixiangqing: '',
+				},
+				changdileixingOptions: [],
+				changdizhuangtaiOptions: [],
+				changdifenleiOptions: [],
+
+				rules: {
+					changdibianhao: [
+					],
+					changdimingcheng: [
+					],
+					changdileixing: [
+					],
+					changditupian: [
+					],
+					changdiweizhi: [
+					],
+					changdizhuangtai: [
+					],
+					changdimianji: [
+					],
+					changdifenlei: [
+					],
+					lianxiren: [
+					],
+					lianxidianhua: [
+						{ validator: validateMobile, trigger: 'blur' },
+					],
+					xiaoshijiage: [
+						{ validator: validateNumber, trigger: 'blur' },
+					],
+					kaifangshijian: [
+					],
+					rongnarenshu: [
+						{ validator: validateIntNumber, trigger: 'blur' },
+					],
+					changdixiangqing: [
+					],
+					storeupnum: [
+						{ validator: validateIntNumber, trigger: 'blur' },
+					],
+				},
+			};
+		},
+		props: ["parent"],
+		computed: {
+
+
+
+		},
+		components: {
+		},
+		created() {
+		},
+		methods: {
+			// 下载
+			download(file){
+				window.open(`${file}`)
+			},
+			// 初始化
+			init(id,type) {
+				if (id) {
+					this.id = id;
+					this.type = type;
+				}
+				if(this.type=='info'||this.type=='else'||this.type=='msg'){
+					this.info(id);
+				}else if(this.type=='logistics'){
+					for(let x in this.ro) {
+						this.ro[x] = true
+					}
+					this.logistics=false;
+					this.info(id);
+				}else if(this.type=='cross'){
+					var obj = this.$storage.getObj('crossObj');
+					for (var o in obj){
+						if(o=='changdibianhao'){
+							this.ruleForm.changdibianhao = obj[o];
+							this.ro.changdibianhao = true;
+							continue;
+						}
+						if(o=='changdimingcheng'){
+							this.ruleForm.changdimingcheng = obj[o];
+							this.ro.changdimingcheng = true;
+							continue;
+						}
+						if(o=='changdileixing'){
+							this.ruleForm.changdileixing = obj[o];
+							this.ro.changdileixing = true;
+							continue;
+						}
+						if(o=='changditupian'){
+							this.ruleForm.changditupian = obj[o];
+							this.ro.changditupian = true;
+							continue;
+						}
+						if(o=='changdiweizhi'){
+							this.ruleForm.changdiweizhi = obj[o];
+							this.ro.changdiweizhi = true;
+							continue;
+						}
+						if(o=='changdizhuangtai'){
+							this.ruleForm.changdizhuangtai = obj[o];
+							this.ro.changdizhuangtai = true;
+							continue;
+						}
+						if(o=='changdimianji'){
+							this.ruleForm.changdimianji = obj[o];
+							this.ro.changdimianji = true;
+							continue;
+						}
+						if(o=='changdifenlei'){
+							this.ruleForm.changdifenlei = obj[o];
+							this.ro.changdifenlei = true;
+							continue;
+						}
+						if(o=='lianxiren'){
+							this.ruleForm.lianxiren = obj[o];
+							this.ro.lianxiren = true;
+							continue;
+						}
+						if(o=='lianxidianhua'){
+							this.ruleForm.lianxidianhua = obj[o];
+							this.ro.lianxidianhua = true;
+							continue;
+						}
+						if(o=='xiaoshijiage'){
+							this.ruleForm.xiaoshijiage = obj[o];
+							this.ro.xiaoshijiage = true;
+							continue;
+						}
+						if(o=='kaifangshijian'){
+							this.ruleForm.kaifangshijian = obj[o];
+							this.ro.kaifangshijian = true;
+							continue;
+						}
+						if(o=='rongnarenshu'){
+							this.ruleForm.rongnarenshu = obj[o];
+							this.ro.rongnarenshu = true;
+							continue;
+						}
+						if(o=='changdixiangqing'){
+							this.ruleForm.changdixiangqing = obj[o];
+							this.ro.changdixiangqing = true;
+							continue;
+						}
+						if(o=='storeupnum'){
+							this.ruleForm.storeupnum = obj[o];
+							this.ro.storeupnum = true;
+							continue;
+						}
+					}
+					this.ruleForm.changdizhuangtai = '空闲中'; 				}
+				// 获取用户信息
+				this.$http({
+					url: `${this.$storage.get('sessionTable')}/session`,
+					method: "get"
+				}).then(({ data }) => {
+					if (data && data.code === 0) {
+						var json = data.data;
+					} else {
+						this.$message.error(data.msg);
+					}
+				});
+				this.$http({
+					url: `option/changdileixing/changdileixing`,
+					method: "get"
+				}).then(({ data }) => {
+					if (data && data.code === 0) {
+						this.changdileixingOptions = data.data;
+					} else {
+						this.$message.error(data.msg);
+					}
+				});
+				this.changdizhuangtaiOptions = "已预约,空闲中".split(',')
+				this.changdifenleiOptions = "室内,室外".split(',')
+			
+			},
+			// 多级联动参数
+
+			info(id) {
+				this.$http({
+					url: `changdixinxi/info/${id}`,
+					method: "get"
+				}).then(({ data }) => {
+					if (data && data.code === 0) {
+						this.ruleForm = data.data;
+						//解决前台上传图片后台不显示的问题
+						let reg=new RegExp('../../../upload','g')//g代表全部
+						this.ruleForm.changdixiangqing = this.ruleForm.changdixiangqing.replace(reg,'../../../springboot9w31m3n7/upload');
+					} else {
+						this.$message.error(data.msg);
+					}
+				});
+			},
+
+			// 提交
+			async onSubmit() {
+					if(this.ruleForm.changdibianhao) {
+						this.ruleForm.changdibianhao = String(this.ruleForm.changdibianhao)
+					}
+					if(this.ruleForm.changditupian!=null) {
+						this.ruleForm.changditupian = this.ruleForm.changditupian.replace(new RegExp(this.$base.url,"g"),"");
+					}
+					var objcross = this.$storage.getObj('crossObj');
+					await this.$refs["ruleForm"].validate(async valid => {
+						if (valid) {
+							if(this.type=='cross'){
+								var statusColumnName = this.$storage.get('statusColumnName');
+								var statusColumnValue = this.$storage.get('statusColumnValue');
+								if(statusColumnName!='') {
+									var obj = this.$storage.getObj('crossObj');
+									if(statusColumnName && !statusColumnName.startsWith("[")) {
+										for (var o in obj){
+											if(o==statusColumnName){
+												obj[o] = statusColumnValue;
+											}
+										}
+										var table = this.$storage.get('crossTable');
+										await this.$http({
+											url: `${table}/update`,
+											method: "post",
+											data: obj
+										}).then(({ data }) => {});
+									}
+								}
+							}
+							
+							await this.$http({
+								url: `changdixinxi/${!this.ruleForm.id ? "save" : "update"}`,
+								method: "post",
+								data: this.ruleForm
+							}).then(async ({ data }) => {
+								if (data && data.code === 0) {
+									this.$message({
+										message: "操作成功",
+										type: "success",
+										duration: 1500,
+										onClose: () => {
+											this.parent.showFlag = true;
+											this.parent.addOrUpdateFlag = false;
+											this.parent.changdixinxiCrossAddOrUpdateFlag = false;
+											this.parent.search();
+											this.parent.contentStyleChange();
+										}
+									});
+								} else {
+									this.$message.error(data.msg);
+								}
+							});
+						}
+					});
+			},
+			// 获取uuid
+			getUUID () {
+				return new Date().getTime();
+			},
+			// 返回
+			back() {
+				this.parent.showFlag = true;
+				this.parent.addOrUpdateFlag = false;
+				this.parent.changdixinxiCrossAddOrUpdateFlag = false;
+				this.parent.contentStyleChange();
+			},
+			changditupianUploadChange(fileUrls) {
+				this.ruleForm.changditupian = fileUrls;
+			},
+		}
+	};
+</script>
+<style lang="scss" scoped>
+	.addEdit-block {
+		padding: 30px;
+		margin: 20px  10px 0 40px;
+		background: #fff;
+	}
+	.add-update-preview {
+		padding: 0px;
+		border-color: #eee;
+		border-width: 0px 0 0;
+		border-style: solid;
+	}
+	.amap-wrapper {
+		width: 100%;
+		height: 500px;
+	}
+	
+	.search-box {
+		position: absolute;
+	}
+	
+	.el-date-editor.el-input {
+		width: auto;
+	}
+	.add-update-preview /deep/ .el-form-item {
+		border: 0px solid #eee;
+		padding: 0;
+		margin: 0 0 26px 0;
+		display: inline-block;
+		width: 49%;
+	}
+	.add-update-preview .el-form-item /deep/ .el-form-item__label {
+		padding: 0 10px 0 0;
+		color: #666;
+		font-weight: 600;
+		width: 180px;
+		font-size: 16px;
+		line-height: 40px;
+		text-align: right;
+	}
+	
+	.add-update-preview .el-form-item /deep/ .el-form-item__content {
+		margin-left: 180px;
+	}
+	.add-update-preview .el-form-item span.text {
+		border: 1px solid #E8E8E8;
+		border-radius: 0px;
+		padding: 0 12px;
+		color: #000;
+		background: none;
+		width: 500px;
+		font-size: 16px;
+		text-align: left;
+		height: 40px;
+	}
+	
+	.add-update-preview .el-input {
+		width: 100%;
+	}
+	.add-update-preview .el-input /deep/ .el-input__inner {
+		border: 2px dashed #E8E8E8;
+		border-radius: 0px;
+		padding: 0 12px;
+		color: #000;
+		width: auto;
+		font-size: 16px;
+		min-width: 500px;
+		height: 40px;
+	}
+	.add-update-preview .el-input /deep/ .el-input__inner[readonly="readonly"] {
+		border: 1px solid #E8E8E8;
+		cursor: not-allowed;
+		border-radius: 0px;
+		padding: 0 12px;
+		color: #000;
+		background: none;
+		width: 500px;
+		font-size: 16px;
+		height: 40px;
+	}
+	.add-update-preview .el-input-number {
+		text-align: left;
+		width: 100%;
+	}
+	.add-update-preview .el-input-number /deep/ .el-input__inner {
+		text-align: left;
+		border: 2px dashed #E8E8E8;
+		border-radius: 0px;
+		padding: 0 12px;
+		color: #000;
+		width: auto;
+		font-size: 16px;
+		min-width: 500px;
+		height: 40px;
+	}
+	.add-update-preview .el-input-number /deep/ .is-disabled .el-input__inner {
+		text-align: left;
+		border: 1px solid #E8E8E8;
+		cursor: not-allowed;
+		border-radius: 0px;
+		padding: 0 12px;
+		color: #000;
+		background: none;
+		width: 500px;
+		font-size: 16px;
+		height: 40px;
+	}
+	.add-update-preview .el-input-number /deep/ .el-input-number__decrease {
+		display: none;
+	}
+	.add-update-preview .el-input-number /deep/ .el-input-number__increase {
+		display: none;
+	}
+	.add-update-preview .el-select {
+		width: 100%;
+	}
+	.add-update-preview .el-select /deep/ .el-input__inner {
+		border: 1px solid #E8E8E8;
+		cursor: not-allowed;
+		border-radius: 0px;
+		padding: 0 12px;
+		color: #000;
+		background: none;
+		width: 500px;
+		font-size: 16px;
+		height: 40px;
+	}
+	.add-update-preview .el-select /deep/ .is-disabled .el-input__inner {
+		border: 1px solid #E8E8E8;
+		cursor: not-allowed;
+		border-radius: 0px;
+		padding: 0 12px;
+		color: #000;
+		background: none;
+		width: 500px;
+		font-size: 16px;
+		height: 40px;
+	}
+	.add-update-preview .el-date-editor {
+		width: 100%;
+	}
+	.add-update-preview .el-date-editor /deep/ .el-input__inner {
+		border: 1px solid #E8E8E8;
+		cursor: not-allowed;
+		border-radius: 0px;
+		padding: 0 30px;
+		color: #000;
+		background: none;
+		width: 500px;
+		font-size: 16px;
+		height: 40px;
+	}
+	.add-update-preview .el-date-editor /deep/ .el-input__inner[readonly="readonly"] {
+		border: 1px solid #E8E8E8;
+		cursor: not-allowed;
+		border-radius: 0px;
+		padding: 0 30px;
+		color: #000;
+		background: none;
+		width: 500px;
+		font-size: 16px;
+		height: 40px;
+	}
+	.add-update-preview .viewBtn {
+		border: 1px solid #E8E8E8;
+		border-radius: 0px;
+		padding: 0 12px;
+		color: #000;
+		background: none;
+		width: auto;
+		font-size: 16px;
+		text-align: left;
+		min-width: 500px;
+		height: 40px;
+		.iconfont {
+			margin: 0 2px;
+			color: #666;
+			font-size: 16px;
+			height: 34px;
+		}
+	}
+	.add-update-preview .viewBtn:hover {
+		opacity: 0.8;
+	}
+	.add-update-preview .downBtn {
+		border: 1px solid #E8E8E8;
+		border-radius: 0px;
+		padding: 0 12px;
+		color: #000;
+		background: none;
+		width: auto;
+		font-size: 16px;
+		text-align: left;
+		min-width: 500px;
+		height: 40px;
+		.iconfont {
+			margin: 0 2px;
+			color: #666;
+			font-size: 16px;
+			height: 34px;
+		}
+	}
+	.add-update-preview .downBtn:hover {
+		opacity: 0.8;
+	}
+	.add-update-preview .unBtn {
+		border: 1px solid #E8E8E8;
+		border-radius: 0px;
+		padding: 0 12px;
+		color: #000;
+		background: none;
+		width: auto;
+		font-size: 16px;
+		text-align: left;
+		min-width: 500px;
+		height: 40px;
+		.iconfont {
+			margin: 0 2px;
+			color: #fff;
+			display: none;
+			font-size: 14px;
+			height: 34px;
+		}
+	}
+	.add-update-preview .unBtn:hover {
+		opacity: 0.8;
+	}
+	.add-update-preview /deep/ .el-upload--picture-card {
+		background: transparent;
+		border: 0;
+		border-radius: 0;
+		width: auto;
+		height: auto;
+		line-height: initial;
+		vertical-align: middle;
+	}
+	
+	.add-update-preview /deep/ .upload .upload-img {
+		border: 1px solid #E8E8E8;
+		cursor: pointer;
+		border-radius: 0px;
+		color: #666;
+		background: #fff;
+		width: 90px;
+		font-size: 24px;
+		line-height: 60px;
+		text-align: center;
+		height: 60px;
+	}
+	
+	.add-update-preview /deep/ .el-upload-list .el-upload-list__item {
+		border: 1px solid #E8E8E8;
+		cursor: pointer;
+		border-radius: 0px;
+		color: #666;
+		background: #fff;
+		width: 90px;
+		font-size: 24px;
+		line-height: 60px;
+		text-align: center;
+		height: 60px;
+	}
+	
+	.add-update-preview /deep/ .el-upload .el-icon-plus {
+		border: 1px solid #E8E8E8;
+		cursor: pointer;
+		border-radius: 0px;
+		color: #666;
+		background: #fff;
+		width: 90px;
+		font-size: 24px;
+		line-height: 60px;
+		text-align: center;
+		height: 60px;
+	}
+	.add-update-preview /deep/ .el-upload__tip {
+		color: #666;
+		font-size: 15px;
+	}
+	
+	.add-update-preview .el-textarea /deep/ .el-textarea__inner {
+		border: 1px solid #E8E8E8;
+		cursor: not-allowed;
+		border-radius: 0px;
+		padding: 10px 20px;
+		color: #000;
+		background: none;
+		width: 500px;
+		font-size: 16px;
+		height: 121px;
+	}
+	.add-update-preview .el-textarea /deep/ .el-textarea__inner[readonly="readonly"] {
+				border: 1px solid #E8E8E8;
+				cursor: not-allowed;
+				border-radius: 0px;
+				padding: 10px 20px;
+				color: #000;
+				background: none;
+				width: 500px;
+				font-size: 16px;
+				height: 121px;
+			}
+	.add-update-preview .el-form-item.btn {
+		padding: 0;
+		margin: 20px 0 0;
+		.btn1 {
+			border: 0px solid #ccc;
+			cursor: pointer;
+			border-radius: 4px;
+			padding: 0 10px;
+			margin: 0 10px 0 0;
+			color: #fff;
+			background: #FF6A01;
+			width: auto;
+			font-size: 16px;
+			min-width: 110px;
+			height: 40px;
+			.iconfont {
+				margin: 0 2px;
+				color: #fff;
+				display: none;
+				font-size: 14px;
+				height: 40px;
+			}
+		}
+		.btn1:hover {
+			opacity: 0.8;
+		}
+		.btn2 {
+			border: 0px solid #ccc;
+			cursor: pointer;
+			border-radius: 4px;
+			padding: 0 10px;
+			margin: 0 10px 0 0;
+			color: #fff;
+			background: #FAB3A0;
+			width: auto;
+			font-size: 16px;
+			min-width: 110px;
+			height: 40px;
+			.iconfont {
+				margin: 0 2px;
+				color: #fff;
+				display: none;
+				font-size: 14px;
+				height: 34px;
+			}
+		}
+		.btn2:hover {
+			opacity: 0.8;
+		}
+		.btn3 {
+			border: 0px solid #ccc;
+			cursor: pointer;
+			border-radius: 4px;
+			padding: 0 10px;
+			margin: 0 10px 0 0;
+			color: #fff;
+			background: #FFC144;
+			width: auto;
+			font-size: 16px;
+			min-width: 110px;
+			height: 40px;
+			.iconfont {
+				margin: 0 2px;
+				color: #fff;
+				display: none;
+				font-size: 14px;
+				height: 40px;
+			}
+		}
+		.btn3:hover {
+			opacity: 0.8;
+		}
+		.btn4 {
+			border: 0px solid #ccc;
+			cursor: pointer;
+			border-radius: 4px;
+			padding: 0 10px;
+			margin: 0 10px 0 0;
+			color: #fff;
+			background: #BFBFBF;
+			width: auto;
+			font-size: 16px;
+			min-width: 110px;
+			height: 40px;
+			.iconfont {
+				margin: 0 2px;
+				color: #fff;
+				display: none;
+				font-size: 14px;
+				height: 40px;
+			}
+		}
+		.btn4:hover {
+			opacity: 0.8;
+		}
+		.btn5 {
+			border: 0px solid #ccc;
+			cursor: pointer;
+			border-radius: 4px;
+			padding: 0 10px;
+			margin: 0 10px 0 0;
+			color: #fff;
+			background: #474747;
+			width: auto;
+			font-size: 16px;
+			min-width: 110px;
+			height: 40px;
+			.iconfont {
+				margin: 0 2px;
+				color: #fff;
+				display: none;
+				font-size: 14px;
+				height: 40px;
+			}
+		}
+		.btn5:hover {
+			opacity: 0.8;
+		}
+	}
+</style>
